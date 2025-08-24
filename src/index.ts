@@ -11,6 +11,8 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT ? process.env.PORT : "3000";
 
+const upload = multer();
+
 const getIrysUploader = async () => {
   const irysUploader = await Uploader(Ethereum).withWallet(
     process.env.PRIVATE_KEY
@@ -37,23 +39,27 @@ async function run() {
     res.send("pong");
   });
 
-  app.post("/api/upload-image", async (req: Request, res: Response) => {
-    try {
-      const img = req.file?.buffer;
-      if (!img) {
-        return res.status(400).send("No file uploaded");
+  app.post(
+    "/api/upload-image",
+    upload.single("file"),
+    async (req: Request, res: Response) => {
+      try {
+        const img = req.file?.buffer;
+        if (!img) {
+          return res.status(400).send("No file uploaded");
+        }
+
+        const tags = [
+          { name: "Content-Type", value: req.file?.mimetype || "image/*" },
+        ];
+
+        const result = await irys.upload(img, { tags: tags });
+        res.send(result.id);
+      } catch (err) {
+        res.status(400).send(`Error uploading image: ${err}`);
       }
-
-      const tags = [
-        { name: "Content-Type", value: req.file?.mimetype || "image/*" },
-      ];
-
-      const result = await irys.upload(img, { tags: tags });
-      res.send(result.id);
-    } catch (err) {
-      res.status(400).send(`Error uploading image: ${err}`);
     }
-  });
+  );
 
   app.post("/api/upload-metadata", async (req: Request, res: Response) => {
     try {
