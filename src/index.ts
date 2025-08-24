@@ -3,6 +3,7 @@ import { Uploader } from "@irys/upload";
 import { Ethereum } from "@irys/upload-ethereum";
 import cors from "cors";
 import dotenv from "dotenv";
+import morgan from "morgan";
 
 dotenv.config();
 
@@ -26,6 +27,7 @@ async function run() {
     })
   );
 
+  app.use(morgan("dev"));
   // Middleware для JSON
   app.use(express.json());
 
