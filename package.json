@@ -8,6 +8,7 @@
     "@irys/upload-ethereum": "^0.0.16",
     "@types/morgan": "^1.9.10",
     "@types/multer": "^2.0.0",
+    "arweave": "^1.10.0",
     "cors": "^2.8.5",
     "dotenv": "^17.2.1",
     "express": "^5.1.0",

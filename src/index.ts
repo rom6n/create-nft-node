@@ -43,7 +43,7 @@ async function run() {
       }
 
       const tags = [
-        { name: "Content-Type", value: req.file?.mimetype || "image/*" },
+        { name: "Content-Type", value: "image/*" },
       ];
 
       const result = await irys.upload(img, { tags: tags });
