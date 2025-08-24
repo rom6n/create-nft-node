@@ -2,6 +2,9 @@ import express, { Request, Response } from "express";
 import { Uploader } from "@irys/upload";
 import { Ethereum } from "@irys/upload-ethereum";
 import cors from "cors";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT ? process.env.PORT : "3000";
@@ -33,13 +36,13 @@ async function run() {
 
   app.post("/api/upload-image", async (req: Request, res: Response) => {
     try {
-      const img: Buffer<ArrayBufferLike> = Buffer.from(req.body);
+      const img = req.body as Buffer;
       const tags = [{ name: "Content-Type", value: "image/*" }];
 
       const result = await irys.upload(img, { tags: tags });
-      res.status(200).send(result.id);
+      res.send(result.id);
     } catch (err) {
-      res.status(200).send(`Error uploading image: ${err}`);
+      res.send(`Error uploading image: ${err}`);
     }
   });
 
@@ -50,9 +53,9 @@ async function run() {
 
       const result = await irys.upload(metadata, { tags: tags });
 
-      res.status(200).send(result.id);
+      res.send(result.id);
     } catch (err) {
-      res.status(200).send(`Error uploading metadata: ${err}`);
+      res.send(`Error uploading metadata: ${err}`);
     }
   });
 

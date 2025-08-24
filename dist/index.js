@@ -7,6 +7,8 @@ const express_1 = __importDefault(require("express"));
 const upload_1 = require("@irys/upload");
 const upload_ethereum_1 = require("@irys/upload-ethereum");
 const cors_1 = __importDefault(require("cors"));
+const dotenv_1 = __importDefault(require("dotenv"));
+dotenv_1.default.config();
 const app = (0, express_1.default)();
 const PORT = process.env.PORT ? process.env.PORT : "3000";
 const getIrysUploader = async () => {
@@ -22,29 +24,29 @@ async function run() {
     // Middleware для JSON
     app.use(express_1.default.json());
     // Маршрут
-    app.get("/ping", (res) => {
+    app.get("/ping", (req, res) => {
         res.send("pong");
     });
-    app.get("/api/upload-image", async (req, res) => {
+    app.post("/api/upload-image", async (req, res) => {
         try {
-            const img = Buffer.from(req.body);
+            const img = req.body;
             const tags = [{ name: "Content-Type", value: "image/*" }];
             const result = await irys.upload(img, { tags: tags });
-            res.sendStatus(200).send(result.id);
+            res.send(result.id);
         }
         catch (err) {
-            res.sendStatus(200).send(`Error uploading image: ${err}`);
+            res.send(`Error uploading image: ${err}`);
         }
     });
-    app.get("/api/upload-metadata", async (req, res) => {
+    app.post("/api/upload-metadata", async (req, res) => {
         try {
             const metadata = req.body;
             const tags = [{ name: "Content-Type", value: "application/json" }];
             const result = await irys.upload(metadata, { tags: tags });
-            res.sendStatus(200).send(result.id);
+            res.send(result.id);
         }
         catch (err) {
-            res.sendStatus(200).send(`Error uploading metadata: ${err}`);
+            res.send(`Error uploading metadata: ${err}`);
         }
     });
     // Запуск сервера
