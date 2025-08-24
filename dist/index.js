@@ -28,15 +28,13 @@ async function run() {
     app.get("/ping", (req, res) => {
         res.send("pong");
     });
-    app.post("/api/upload-image", async (req, res) => {
+    app.post("/api/upload-image", express_1.default.raw({ type: "application/octet-stream", limit: "10mb" }), async (req, res) => {
         try {
             const img = req.body;
-            if (!img) {
-                return res.status(400).send("No file uploaded");
+            if (!img || !Buffer.isBuffer(img)) {
+                return res.status(400).send("Invalid image data");
             }
-            const tags = [
-                { name: "Content-Type", value: "image/*" },
-            ];
+            const tags = [{ name: "Content-Type", value: "image/*" }];
             const result = await irys.upload(img, { tags: tags });
             res.send(result.id);
         }
@@ -44,11 +42,13 @@ async function run() {
             res.status(400).send(`Error uploading image: ${err}`);
         }
     });
-    app.post("/api/upload-metadata", async (req, res) => {
+    app.post("/api/upload-metadata", express_1.default.json({ limit: "1mb" }), async (req, res) => {
         try {
             const metadata = req.body;
             const tags = [{ name: "Content-Type", value: "application/json" }];
-            const result = await irys.upload(metadata, { tags: tags });
+            const result = await irys.upload(JSON.stringify(metadata), {
+                tags: tags,
+            });
             res.send(result.id);
         }
         catch (err) {

@@ -35,33 +35,45 @@ async function run() {
     res.send("pong");
   });
 
-  app.post("/api/upload-image", async (req: Request, res: Response) => {
-    try {
-      const img = req.body;
+  app.post(
+    "/api/upload-image",
+    express.raw({ type: "application/octet-stream", limit: "10mb" }),
+    async (req: Request, res: Response) => {
+      try {
+        const img = req.body as Buffer;
 
-      const tags = [
-        { name: "Content-Type", value: "image/*" },
-      ];
+        if (!img || !Buffer.isBuffer(img)) {
+          return res.status(400).send("Invalid image data");
+        }
 
-      const result = await irys.upload(img, { tags: tags });
-      res.send(result.id);
-    } catch (err) {
-      res.status(400).send(`Error uploading image: ${err}`);
+        const tags = [{ name: "Content-Type", value: "image/*" }];
+
+        const result = await irys.upload(img, { tags: tags });
+        res.send(result.id);
+      } catch (err) {
+        res.status(400).send(`Error uploading image: ${err}`);
+      }
     }
-  });
+  );
 
-  app.post("/api/upload-metadata", async (req: Request, res: Response) => {
-    try {
-      const metadata = req.body;
-      const tags = [{ name: "Content-Type", value: "application/json" }];
+  app.post(
+    "/api/upload-metadata",
+    express.json({ limit: "1mb" }),
+    async (req: Request, res: Response) => {
+      try {
+        const metadata = req.body;
+        const tags = [{ name: "Content-Type", value: "application/json" }];
 
-      const result = await irys.upload(metadata, { tags: tags });
+        const result = await irys.upload(JSON.stringify(metadata), {
+          tags: tags,
+        });
 
-      res.send(result.id);
-    } catch (err) {
-      res.status(400).send(`Error uploading metadata: ${err}`);
+        res.send(result.id);
+      } catch (err) {
+        res.status(400).send(`Error uploading metadata: ${err}`);
+      }
     }
-  });
+  );
 
   // Запуск сервера
   app.listen(PORT, () => {
