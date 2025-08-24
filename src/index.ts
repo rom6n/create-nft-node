@@ -27,32 +27,32 @@ async function run() {
   app.use(express.json());
 
   // Маршрут
-  app.get("/ping", (res: Response) => {
+  app.get("/ping", (req: Request, res: Response) => {
     res.send("pong");
   });
 
-  app.get("/api/upload-image", async (req: Request, res: Response) => {
+  app.post("/api/upload-image", async (req: Request, res: Response) => {
     try {
       const img: Buffer<ArrayBufferLike> = Buffer.from(req.body);
       const tags = [{ name: "Content-Type", value: "image/*" }];
 
       const result = await irys.upload(img, { tags: tags });
-      res.sendStatus(200).send(result.id);
+      res.status(200).send(result.id);
     } catch (err) {
-      res.sendStatus(200).send(`Error uploading image: ${err}`);
+      res.status(200).send(`Error uploading image: ${err}`);
     }
   });
 
-  app.get("/api/upload-metadata", async (req: Request, res: Response) => {
+  app.post("/api/upload-metadata", async (req: Request, res: Response) => {
     try {
       const metadata = req.body;
       const tags = [{ name: "Content-Type", value: "application/json" }];
 
       const result = await irys.upload(metadata, { tags: tags });
 
-      res.sendStatus(200).send(result.id);
+      res.status(200).send(result.id);
     } catch (err) {
-      res.sendStatus(200).send(`Error uploading metadata: ${err}`);
+      res.status(200).send(`Error uploading metadata: ${err}`);
     }
   });
 
