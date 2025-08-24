@@ -44,7 +44,7 @@ async function run() {
       const result = await irys.upload(img, { tags: tags });
       res.send(result.id);
     } catch (err) {
-      res.send(`Error uploading image: ${err}`);
+      res.status(400).send(`Error uploading image: ${err}`);
     }
   });
 
@@ -57,7 +57,7 @@ async function run() {
 
       res.send(result.id);
     } catch (err) {
-      res.send(`Error uploading metadata: ${err}`);
+      res.status(400).send(`Error uploading metadata: ${err}`);
     }
   });
 
