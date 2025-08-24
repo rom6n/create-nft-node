@@ -4,6 +4,7 @@ import { Ethereum } from "@irys/upload-ethereum";
 import cors from "cors";
 import dotenv from "dotenv";
 import morgan from "morgan";
+import multer from "multer";
 
 dotenv.config();
 
@@ -38,8 +39,14 @@ async function run() {
 
   app.post("/api/upload-image", async (req: Request, res: Response) => {
     try {
-      const img = req.body as Buffer;
-      const tags = [{ name: "Content-Type", value: "image/*" }];
+      const img = req.file?.buffer;
+      if (!img) {
+        return res.status(400).send("No file uploaded");
+      }
+
+      const tags = [
+        { name: "Content-Type", value: req.file?.mimetype || "image/*" },
+      ];
 
       const result = await irys.upload(img, { tags: tags });
       res.send(result.id);
