@@ -38,9 +38,6 @@ async function run() {
   app.post("/api/upload-image", async (req: Request, res: Response) => {
     try {
       const img = req.body;
-      if (!img) {
-        return res.status(400).send("No file uploaded");
-      }
 
       const tags = [
         { name: "Content-Type", value: "image/*" },
