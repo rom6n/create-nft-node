@@ -22,7 +22,7 @@ async function run() {
 
   app.use(
     cors({
-      origin: "https://rom6n.github.io",
+      origin: "*",
       methods: ["GET", "POST"],
     })
   );
